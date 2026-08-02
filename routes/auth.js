@@ -8,11 +8,24 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(409).json({ error: 'An account with this email already exists' });
+    }
+
     const hashed = await bcrypt.hash(password, 10);
     const user = new User({ name, email, password: hashed });
     await user.save();
     res.json({ message: 'User registered' });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'An account with this email already exists' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
