@@ -8,6 +8,7 @@ const experienceRoutes = require('./routes/experienceRoutes');
 const userRoutes = require('./routes/user');
 const uploadRoutes = require('./routes/upload');
 const bookingRoutes = require('./routes/bookings');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/experiences', experienceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health Check
 app.get('/', (req, res) => {
