@@ -13,7 +13,7 @@ router.post('/register', async (req, res) => {
 
 
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!password || !passwordRegex.test(password)) {
       return res.status(400).json({ error: 'Password must be at least 8 characters and include a lowercase letter, an uppercase letter, and a number' });
     }
