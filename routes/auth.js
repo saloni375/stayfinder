@@ -11,10 +11,12 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!password || password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-    }
 
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!password || !passwordRegex.test(password)) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters and include a lowercase letter, an uppercase letter, and a number' });
+    }
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(409).json({ error: 'An account with this email already exists' });
