@@ -43,7 +43,7 @@ router.post('/profile-photo', upload.single('file'), async (req, res) => {
 
   try {
     
-    const user = await User.findByIdAndUpdate(userId, { photoUrl: fileUrl }, { new: true });
+    const user = await User.findByIdAndUpdate(userId, { photo: fileUrl }, { new: true });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
