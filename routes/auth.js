@@ -70,8 +70,7 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+ res.json({ token, user: { id: user._id, name: user.name, email: user.email, photo: user.photo } });
   } catch (err) {
     res.status(401).json({ error: 'Google authentication failed' });
   }
