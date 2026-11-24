@@ -38,7 +38,11 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    // Emails are saved in lowercase, so search in lowercase too
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user || !(await bcrypt.compare(password, user.password)))
       return res.status(401).json({ error: 'Invalid credentials' });
 
@@ -70,8 +74,11 @@ router.post('/google', async (req, res) => {
       await user.save();
     }
 
- res.json({ token, user: { id: user._id, name: user.name, email: user.email, photo: user.photo } });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, photo: user.photo } });
   } catch (err) {
+    console.error('Google sign-in error:', err.message);
     res.status(401).json({ error: 'Google authentication failed' });
   }
 });

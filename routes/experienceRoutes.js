@@ -22,23 +22,4 @@ router.get('/:id', async (req, res) => {
 });
 
 
-router.post('/', async (req, res) => {
-  const newExp = new Experience({
-    title: req.body.title,
-    location: req.body.location,
-    price: req.body.price,
-    rating: req.body.rating,
-    duration: req.body.duration,
-    isNew: req.body.isNew,
-    image: req.body.image
-  });
-
-  try {
-    const savedExp = await newExp.save();
-    res.status(201).json(savedExp);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
 module.exports = router;

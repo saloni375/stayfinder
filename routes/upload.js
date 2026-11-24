@@ -4,6 +4,7 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const router = express.Router();
 const User = require('../models/User');
+const verifyToken = require('../middleware/auth');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -21,21 +22,19 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage });
 
-router.post('/profile-photo', upload.single('file'), async (req, res) => {
+// verifyToken runs FIRST, so only logged-in users can upload.
+// We use req.userId from the token, not a userId sent by the frontend.
+router.post('/profile-photo', verifyToken, upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
   // multer-storage-cloudinary puts the final, permanent Cloudinary URL here
   const fileUrl = req.file.path;
-  const { userId } = req.body;
-
-  if (!userId) {
-    return res.status(400).json({ error: 'Missing userId' });
-  }
 
   try {
-    const user = await User.findByIdAndUpdate(userId, { photo: fileUrl }, { new: true });
+    const user = await User.findByIdAndUpdate(req.userId, { photo: fileUrl }, { new: true })
+      .select('-password');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -48,21 +47,17 @@ router.post('/profile-photo', upload.single('file'), async (req, res) => {
   }
 });
 
-router.delete('/profile-photo/:userId',async(req,res)=>{
-  try{
-    const user = await User.findByIdAndUpdate(
-    req.params.userId,
-    {photo:''},
-    {new : true}
-    );
-    if(!user){
-      return res.status(404).json({error:'User not found'});
-      
+router.delete('/profile-photo', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.userId, { photo: '' }, { new: true })
+      .select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
-    res.json({user});
+    res.json({ user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error deleting profile photo' });
   }
-})
+});
 module.exports = router;
