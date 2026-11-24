@@ -17,7 +17,7 @@ router.post('/', verifyToken, async (req, res) => {
     const { propertyId, type, checkIn, checkOut, guests } = req.body;
 
     // 1. Basic checks
-    if (!propertyId || !['stay', 'experience'].includes(type)) {
+       if (!propertyId || !mongoose.Types.ObjectId.isValid(propertyId) || !['stay', 'experience'].includes(type)) {
       return res.status(400).json({ error: 'Invalid booking details' });
     }
 
