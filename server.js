@@ -11,6 +11,8 @@ const bookingRoutes = require('./routes/bookings');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+// Render sits in front of our app as a proxy, so read the real user IP from it
+app.set('trust proxy', 1);
 
 // Only these websites can call this API from a browser
 const allowedOrigins = [
