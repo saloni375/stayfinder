@@ -6,7 +6,8 @@ const propertySchema = new mongoose.Schema({
   location: String,
   price: Number,
   rating: Number,           
-  description: String
+  description: String,
+  amenities: [String]
 });
 
 module.exports = mongoose.model('Property', propertySchema);
