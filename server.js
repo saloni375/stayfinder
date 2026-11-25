@@ -12,7 +12,12 @@ const authRoutes = require('./routes/auth');
 
 const app = express();
 
-app.use(cors());
+// Only these websites can call this API from a browser
+const allowedOrigins = [
+  'http://localhost:3000',                      // local development
+  'https://stayfinder-frontend-eta.vercel.app', // live frontend
+];
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // MongoDB Connection
